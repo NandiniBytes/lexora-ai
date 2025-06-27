@@ -4,13 +4,10 @@ Given the following legal clause, simplify it into plain, easy-to-understand lan
 
 Also, indicate which legal domain this clause belongs to (e.g., Intellectual Property, Liability, Employment Law, Data Protection, etc.)
 
-Clause:
-"{clause}"
+Clause: {clause}
 
 Respond in this format:
 
-**Plain English Explanation:**  
-...
-
-**Legal Domain:**  
-...
+Please reply in this format:
+Explanation: <short explanation>
+Domain: <legal domain>
