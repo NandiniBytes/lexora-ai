@@ -3,32 +3,63 @@ from fastapi.middleware.cors import CORSMiddleware
 from routes.nda_generator import router as nda_router
 from routes.clause_explainer import router as explainer_router
 from routes.clause_comparator import router as comparator_router
+from models import Base
+from database import engine
+import logging
+import datetime
 import uvicorn
 
-#initialize the fastapi app
-app = FastAPI(title="Lexora backend")
+# Initialize logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-#configure CORS 
+# Initialize FastAPI app
+app = FastAPI(
+    title="Lexora Backend",
+    description="Enterprise-grade backend for AI-powered clause analysis and generation using IBM Granite.",
+    version="1.0.0"
+)
+
+# Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # Replace with frontend domain in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-#include routers
-app.include_router(nda_router, prefix="/api/nda")
-app.include_router(explainer_router, prefix="/api/explainer")
-app.include_router(comparator_router, prefix="/api/comparator")
+# Create DB tables (optional - include only if not using Alembic)
+Base.metadata.create_all(bind=engine)
 
-# root route
-@app.get("/")
+# Include routers
+app.include_router(nda_router, prefix="/api/nda", tags=["NDA Generator"])
+app.include_router(explainer_router, prefix="/api/explainer", tags=["Clause Explainer"])
+app.include_router(comparator_router, prefix="/api/comparator", tags=["Clause Comparator"])
+
+# Root route
+@app.get("/", tags=["System"])
 async def root():
-    return{
+    return {
         "message": "Lexora backend is running"
     }
 
-#run server
+# Healthcheck route
+@app.get("/health", tags=["System"])
+def health_check():
+    return {
+        "status": "running",
+        "timestamp": datetime.datetime.utcnow().isoformat()
+    }
+
+# Request logging middleware
+@app.middleware("http")
+async def log_requests(request, call_next):
+    logger.info(f"📥 Request: {request.method} {request.url}")
+    response = await call_next(request)
+    logger.info(f"📤 Response status: {response.status_code}")
+    return response
+
+# Run server
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=5000)
+    uvicorn.run("app:app", host="0.0.0.0", port=5000, reload=True)

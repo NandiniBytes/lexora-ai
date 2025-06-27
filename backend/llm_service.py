@@ -1,4 +1,5 @@
-from transformers import pipeline
+from transformers import AutoModelForCausalLM, AutoTokenizer, set_seed
+import torch
 import logging
 
 # Configure logging
@@ -7,36 +8,39 @@ logger = logging.getLogger(__name__)
 
 def query_model(prompt: str) -> str:
     """
-    Queries the IBM Granite model with a given prompt and returns the generated text.
-    
-    Args:
-        prompt (str): Input prompt for the model
-        
-    Returns:
-        str: Generated text from the model
+    Queries the IBM Granite 3.3-8B-Instruct model with a prompt and returns generated text.
     """
     try:
-        # Initialize the pipeline
-        logger.info("Initializing text-generation pipeline...")
-        pipe = pipeline(
-            task="text-generation",
-            model="ibm-granite/granite-13b-instruct",
-            model_kwargs={
-                "do_sample": False,
-                "temperature": 0.0,
-                "max_new_tokens": 400
-            },
-            device=-1  # CPU
+        model_id = "ibm/granite-3.3-8b-instruct"
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        logger.info(f"Using device: {device}")
+
+        # Load model and tokenizer
+        logger.info("Loading Granite model and tokenizer...")
+        tokenizer = AutoTokenizer.from_pretrained(model_id)
+        model = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=torch.bfloat16)
+        model.to(device)
+
+        # Tokenize the prompt
+        inputs = tokenizer(prompt, return_tensors="pt").to(device)
+
+        # Generate response
+        logger.info("Generating output...")
+        set_seed(42)
+        outputs = model.generate(
+            **inputs,
+            max_new_tokens=400,
+            do_sample=False,
+            temperature=0.0,
         )
-        
-        # Generate text
-        logger.info("Generating text from prompt...")
-        output = pipe(prompt)[0]["generated_text"]
-        
-        # Clean and return the output
-        cleaned_output = output.strip()
-        return cleaned_output
-    
+
+        # Decode output
+        response = tokenizer.decode(
+            outputs[0], skip_special_tokens=True
+        ).strip()
+
+        return response
+
     except Exception as e:
         logger.error(f"Error querying model: {str(e)}")
-        raise
+        return "Error generating output"
