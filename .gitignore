@@ -1,0 +1,71 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+*.pyo
+*.pyd
+*.pkl
+*.log
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.*
+
+# Databases
+*.sqlite3
+*.db
+
+# Compiled
+*.so
+
+# FastAPI/Starlette
+instance/
+*.pid
+
+# Pytest
+htmlcov/
+.tox/
+.pytest_cache/
+.coverage
+coverage.xml
+
+# Mypy, Pyright
+.mypy_cache/
+.pytype/
+.pyright/
+
+# Build
+build/
+dist/
+*.tar.gz
+*.whl
+
+# Git
+*.orig
+*.rej
+
+# Node (if frontend is inside same repo)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# IBM Cloud (ignore local credentials)
+ibm-credentials.env
+.ibmcloudconfig/
