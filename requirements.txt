@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+langchain
+faiss-cpu
+transformers
+torch
+PyMuPDF
+python-dotenv
+python-docx

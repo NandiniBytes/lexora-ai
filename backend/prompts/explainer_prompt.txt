@@ -1,0 +1,16 @@
+You are an expert legal analyst with the ability to explain complex legal clauses to non-lawyers.
+
+Given the following legal clause, simplify it into plain, easy-to-understand language for a junior employee.
+
+Also, indicate which legal domain this clause belongs to (e.g., Intellectual Property, Liability, Employment Law, Data Protection, etc.)
+
+Clause:
+"{clause}"
+
+Respond in this format:
+
+**Plain English Explanation:**  
+...
+
+**Legal Domain:**  
+...
