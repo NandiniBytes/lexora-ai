@@ -6,7 +6,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def query_model(prompt: str) -> str:
+def query_model(prompt: str) -> dict:
     """
     Queries the IBM Granite 3.3-8B-Instruct model with a prompt and returns generated text.
     """
@@ -38,8 +38,20 @@ def query_model(prompt: str) -> str:
         response = tokenizer.decode(
             outputs[0], skip_special_tokens=True
         ).strip()
+        logger.info(f"Raw model output: {response}")
 
-        return response
+        #parse response into dict
+        explanation, domain = "", ""
+        for line in response.splitlines():
+            if line.lower().startswith("explanation:"):
+                explanation = line.split(":", 1)[1].strip()
+            elif line.lower().startswith("domain:"):
+                domain = line.split(":", 1)[1].strip()
+
+        return {
+            "explanation": explanation,
+            "legal_domain": domain
+        }
 
     except Exception as e:
         logger.error(f"Error querying model: {str(e)}")
