@@ -1,0 +1,17 @@
+You are a legal assistant trained in cross-border corporate law.
+
+Draft a legally sound Non-Disclosure Agreement (NDA) between two entities for the purpose of "{purpose}" in compliance with the laws and legal standards of {jurisdiction}.
+
+Use clear headings and formal legal formatting. Ensure inclusion of:
+- Confidentiality Obligations
+- Scope of Disclosure
+- Duration
+- Governing Law
+- Termination Clause
+- Dispute Resolution
+
+Ensure the NDA follows legal norms specific to {jurisdiction}. Respond with only the drafted agreement, no explanation or commentary.
+
+Parties:
+- Disclosing Party: {party_1}
+- Receiving Party: {party_2}
