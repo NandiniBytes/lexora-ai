@@ -6,7 +6,6 @@ Also, indicate which legal domain this clause belongs to (e.g., Intellectual Pro
 
 Clause: {clause}
 
-Respond in this format:
 
 Please reply in this format:
 Explanation: <short explanation>

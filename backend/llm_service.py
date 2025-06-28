@@ -11,7 +11,7 @@ def query_model(prompt: str) -> dict:
     Queries the IBM Granite 3.3-8B-Instruct model with a prompt and returns generated text.
     """
     try:
-        model_id = "ibm/granite-3.3-8b-instruct"
+        model_id = "ibm-granite/granite-3.3-8b-instruct"
         device = "cuda" if torch.cuda.is_available() else "cpu"
         logger.info(f"Using device: {device}")
 
@@ -39,6 +39,7 @@ def query_model(prompt: str) -> dict:
             outputs[0], skip_special_tokens=True
         ).strip()
         logger.info(f"Raw model output: {response}")
+        print(f"\n🧠 MODEL RESPONSE:\n{response}\n")
 
         #parse response into dict
         explanation, domain = "", ""
