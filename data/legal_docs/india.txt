@@ -1,0 +1,10 @@
+Confidentiality Agreement
+
+This Agreement is entered into by and between the parties for the purpose of maintaining confidentiality of sensitive information.
+
+1. Definition: “Confidential Information” means any information designated as confidential by the disclosing party.
+2. Use Restrictions: The receiving party agrees to use the confidential information solely for the purpose specified and not for personal gain or disclosure.
+3. Duration: The obligations shall continue for a period of five (5) years.
+4. Jurisdiction: This Agreement shall be governed by the laws of India and subject to the jurisdiction of the courts in Mumbai.
+
+Executed on: [Date]

@@ -7,3 +7,4 @@ torch
 PyMuPDF
 python-dotenv
 python-docx
+sqlalchemy

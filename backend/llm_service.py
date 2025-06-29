@@ -1,59 +1,91 @@
-from transformers import AutoModelForCausalLM, AutoTokenizer, set_seed
-import torch
+import os
 import logging
+import requests
+from dotenv import load_dotenv
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
+# Load environment variables
+load_dotenv()
+
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+def get_iam_token() -> str:
+    """
+    Fetch IAM token from IBM Cloud using API key from .env.
+    """
+    api_key = os.getenv("IBM_API_KEY")
+    if not api_key:
+        raise ValueError("IBM_API_KEY not found in environment variables")
+
+    response = requests.post(
+        "https://iam.cloud.ibm.com/identity/token",
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        data={
+            "grant_type": "urn:ibm:params:oauth:grant-type:apikey",
+            "apikey": api_key
+        }
+    )
+
+    if response.status_code != 200:
+        raise Exception(f"Failed to get token: {response.status_code}, {response.text}")
+
+    return response.json()["access_token"]
+
 
 def query_model(prompt: str) -> dict:
     """
-    Queries the IBM Granite 3.3-8B-Instruct model with a prompt and returns generated text.
+    Query the IBM Watsonx Granite model using plain text prompt format.
     """
     try:
-        model_id = "ibm-granite/granite-3.3-8b-instruct"
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-        logger.info(f"Using device: {device}")
+        project_id = os.getenv("IBM_PROJECT_ID")
+        model_id = os.getenv("IBM_MODEL_ID", "ibm/granite-3-3-8b-instruct")
+        base_url = os.getenv("IBM_GRANITE_URL", "https://us-south.ml.cloud.ibm.com")
+        api_version = "2023-05-29"
 
-        # Load model and tokenizer
-        logger.info("Loading Granite model and tokenizer...")
-        tokenizer = AutoTokenizer.from_pretrained(model_id)
-        model = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=torch.bfloat16)
-        model.to(device)
+        if not project_id:
+            raise ValueError("IBM_PROJECT_ID missing from .env")
 
-        # Tokenize the prompt
-        inputs = tokenizer(prompt, return_tensors="pt").to(device)
+        token = get_iam_token()
+        logger.info("✅ Token acquired")
 
-        # Generate response
-        logger.info("Generating output...")
-        set_seed(42)
-        outputs = model.generate(
-            **inputs,
-            max_new_tokens=400,
-            do_sample=False,
-            temperature=0.0,
-        )
+        url = f"{base_url}/ml/v1/text/generation?version={api_version}"
 
-        # Decode output
-        response = tokenizer.decode(
-            outputs[0], skip_special_tokens=True
-        ).strip()
-        logger.info(f"Raw model output: {response}")
-        print(f"\n🧠 MODEL RESPONSE:\n{response}\n")
+        payload = {
+            "project_id": project_id,
+            "model_id": model_id,
+            "input": prompt,  # 🔄 Correct format for /ml/v1/text/generation
+            "parameters": {
+                "temperature": 0.3,
+                "max_tokens": 1000,
+                "top_p": 1
+            }
+        }
 
-        #parse response into dict
-        explanation, domain = "", ""
-        for line in response.splitlines():
-            if line.lower().startswith("explanation:"):
-                explanation = line.split(":", 1)[1].strip()
-            elif line.lower().startswith("domain:"):
-                domain = line.split(":", 1)[1].strip()
+        headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {token}"
+        }
+
+        logger.info("📡 Sending request to Watsonx...")
+        response = requests.post(url, headers=headers, json=payload)
+        logger.info(f"📬 Response status: {response.status_code}")
+
+        if response.status_code != 200:
+            logger.error(f"Watsonx error: {response.status_code} - {response.text}")
+            return {"explanation": f"Watsonx Error: {response.status_code}", "legal_domain": "Unknown"}
+
+        result = response.json()
+        output = result.get("results", [{}])[0].get("generated_text", "")
+
+        if not output:
+            logger.warning("⚠️ Empty response from model.")
 
         return {
-            "explanation": explanation,
-            "legal_domain": domain
+            "explanation": output.strip() if output else "No output from model",
+            "legal_domain": "General"
         }
 
     except Exception as e:
-        logger.error(f"Error querying model: {str(e)}")
-        return "Error generating output"
+        logger.error(f"❌ LLM Service Error: {e}")
+        return {"explanation": f"Error: {str(e)}", "legal_domain": "Unknown"}

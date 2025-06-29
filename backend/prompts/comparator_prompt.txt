@@ -1,21 +1,15 @@
-You are a cross-border legal expert specializing in comparative international law.
+Compare the {clause_type} clauses between {country_1} and {country_2}.
 
-Compare how the following clause type — "{clause_type}" — is interpreted and enforced in the legal systems of {country_1} and {country_2}.
+IMPORTANT: Your response MUST be in valid JSON format exactly like this:
 
-Explain:
-- How the clause is defined or regulated in each country
-- Key differences in enforceability, limitations, or obligations
-- Any compliance risks or business considerations for multinational companies
+{
+    "country_1": "Description of {country_1}'s approach",
+    "country_2": "Description of {country_2}'s approach",
+    "key_differences": [
+        "First key difference",
+        "Second key difference",
+        "Third key difference"
+    ]
+}
 
-Respond in this format:
-
-🇨🇦 {Country 1}:  
-- ...  
-- ...
-
-🇩🇪 {Country 2}:  
-- ...  
-- ...
-
-⚠️ **Key Differences and Risk Flags:**  
-- ...
+Include all relevant legal distinctions and practical implications.

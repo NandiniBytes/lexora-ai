@@ -25,21 +25,10 @@ async def explain_clause(request: ClauseExplainRequest):
         #query llm service
         result = query_model(formatted_prompt)
 
-        #parse string response
-        lines = result.split("\n")
-        explanation = ""
-        domain = ""
-
-        for line in lines:
-            if line.lower().startswith("explanation"):
-                explanation = line.split(":", 1)[1].strip()
-            elif line.lower().startswith("domain:"):
-                domain = line.split(":", 1)[1].strip()
-
         #assuming llm returns a structured response with explanation and legal domain
         return {
-            "explanation": explanation,
-            "legal_domain": domain
+            "explanation": result.get("explanation", ""),
+            "legal_domain": result.get("legal_domain", "")
         }
     
     except Exception as e:
