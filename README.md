@@ -167,8 +167,8 @@ Lexora.AI does **not provide real legal advice**.
 
 | Role         | Name                            |
 |--------------|---------------------------------|
-| AI & Backend | Nandini (You 💅)                |
-| Frontend     | Your Teammate 💻                |
+| AI & Backend | Nandini 💅                |
+| Frontend     | Sayan 💻                |
 | Inspiration  | Watsonx, Vercel, Open Source 🧠 |
 
 ---
