@@ -1,4 +1,4 @@
-# ⚖️ Lexora.AI – Decode Legalese, the Smart Way
+# ⚖️ Lexora.AI – Decode Legalese, Smartly
 
 [🌐 Visit the Live Web App](https://v0-lexora-ai-website-seven.vercel.app/)  
 Built with 🧠 IBM Watsonx | 🤖 Granite LLM | ⚙️ FastAPI | 🧪 LangChain | 💅 Vercel + V0
